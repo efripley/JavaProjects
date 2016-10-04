@@ -7,7 +7,15 @@ package ernie.ripley;
 
 import static kiss.API.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Comparator;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.HashSet;
+import java.util.TreeSet;
+import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 /**
  *
  * @author Ernie
@@ -56,13 +64,13 @@ public class App {
 		for(int age : ages){
 			println(age);
 		}
-		
+
 		ages.sort(new IntegerReverse());
-		
+
 		for(int age : ages){
 			println(age);
 		}
-		
+
 		ages.sort(new Comparator<Integer>(){
 			@Override
 			public int compare(Integer a, Integer b){
@@ -72,41 +80,98 @@ public class App {
 		
 		ages.sort((a,b) -> -a.compareTo(b)); // lambda
 	}
+	
+	void testCollection(){
+		Collection<Integer> c = new HashSet<Integer>();
+		c.add(3);
+		c.add(1);
+		c.add(7);
+		c.add(2);
+		
+		assert c.contains(3) == true;
+		
+		c.remove(3);
+		
+		assert c.contains(3) == false;
+	
+		Iterator<Integer> i = c.iterator();
+		try( Close out = outExpect(1, EOL, 2, EOL, 7, EOL)){
+			while(i.hasNext()){
+				Integer value = i.next();
+				println(value);
+			}
+		}
+		try( Close out = outExpect(1, EOL, 2, EOL, 7, EOL)){
+			for(Integer value : c){
+				println(value);
+			}
+		}
+	}
+	
+	void testTreeSet(){
+		Set<String> pets = new TreeSet<String>();
+		pets.add("fluffy");
+		pets.add("pookie");
+		pets.add("pupper");
+		pets.add("doge");
+		pets.add("pepe");
+		
+		for(String pet: pets){
+			println(pet);
+		}
+	}
 
-    void testBooleans() {
-        assert true != false;
-        assert true == true;
-        assert false == false;
-        try (Close out = outExpect("true")) {
-            println(true);
-        }
-        try (Close out = outExpect("false")) {
-            println(false);
-        }
-
-        //not
-        assert !true == false;
-        assert !false == true;
-
-        // and
-        assert (true && true) == true;
-        assert (true && false) == false;
-        assert (false && true) == false;
-        assert (false && false) == false;
-
-        assert (false && (random(0, 1) == 1)) == false;
-
-        assert (false && (1 / 0 == 3)) == false;
-
-        //or
-        assert (true || true) == true;
-        assert (true || false) == true;
-        assert (false || true) == true;
-        assert (false || false) == false;
-
-        assert (true || (1 / 0 == 3)) == true;
-
+	void testHashSet(){
+		Set<String> pets = new HashSet<String>();
+		pets.add("fluffy");
+		pets.add("pookie");
+		pets.add("pupper");
+		pets.add("doge");
+		pets.add("pepe");
+		
+		for(String pet: pets){
+			println(pet);
+		}
+	}
+	
+	//MAPS
+	void testHashMap(){
+		Map<String, Integer> petAges = new 
+	}
+	
+  void testBooleans() {
+    assert true != false;
+    assert true == true;
+    assert false == false;
+    try (Close out = outExpect("true")) {
+      println(true);
     }
+    try (Close out = outExpect("false")) {
+      println(false);
+    }
+
+    //not
+    assert !true == false;
+    assert !false == true;
+    // and
+    assert (true && true) == true;
+    assert (true && false) == false;
+    assert (false && true) == false;
+    assert (false && false) == false;
+
+    assert (false && (random(0, 1) == 1)) == false;
+
+    assert (false && (1 / 0 == 3)) == false;
+
+    //or
+    assert (true || true) == true;
+    assert (true || false) == true;
+    assert (false || true) == true;
+    assert (false || false) == false;
+
+    assert (true || (1 / 0 == 3)) == true;
+
+  }
 
     void testInts() {
         assert Integer.MAX_VALUE == Math.pow(2, 31) - 1;
