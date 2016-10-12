@@ -5,16 +5,23 @@ import java.util.TreeMap;
 
 /*
 Ernie Ripley
-Interpreter for language X that uses a map from variable names to values
-
-This interpreter only recognizes a few things. Integers Functions Booleans Variables
+Assembler for my 8bit processor that uses a map from string instruction to byte values.
+Assembler expects an instructions followed by a value.
+Values can represent locations or numbers depending on the instruction.
 
 Language Functions include
-	VAR - a function to set a variable to a value
-	ADD - a function to add two variables
-	SUB - a function to subtract two variables
-	OUT - a function to print a variable
-	INP - a function to input a value to a variable
+	LDPP --- 0X01
+	LDDP --- 0X02
+	STOR --- 0X03
+	ADPP --- 0X04
+	ADDP --- 0X05
+	IFLT --- 0X06
+	IFEQ --- 0X07
+	IFGT --- 0X08
+	INPP --- 0X09
+	INDP --- 0X0A
+	OTPP --- 0X0B
+	OTDP --- 0X0C
 */
 
 public class App{
@@ -62,3 +69,4 @@ public class App{
 		assert (getToken(codeInX, 2).equals("X") == false);
 	}
 }
+
