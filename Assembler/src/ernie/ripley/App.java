@@ -21,7 +21,6 @@ Language Functions include
 	ADDP --- 0X05
 	IFLT --- 0X06
 	IFEQ --- 0X07
-	IFGT --- 0X08
 	JUMP --- 0X09
 	INPP --- 0X0A
 	INDP --- 0X0B
@@ -65,7 +64,29 @@ Macros and Jump Pointer variables are allowed to have the same name since access
 
 public class App{
 	TreeMap<String, Byte> keywords = new TreeMap<String, Byte>();
+	int[] cpuInstructionRange = {(byte)0x01, (byte)0x0D};
+	int[] asmInstructionRange = {(byte)0xF1, (byte)0xF4};
 	int charIndex = 0;
+	String testCode = "MCRB NAME\n" +
+										"LDPP CH-E\n" +
+										"OTDP 0XFF\n" +
+										"LDPP CH-R\n" +
+										"OTDP 0XFF\n" +
+										"LDPP CH-N\n" +
+										"OTDP 0XFF\n" +
+										"LDPP CH-I\n" +
+										"OTDP 0XFF\n" +
+										"LDPP CH-E\n" +
+										"OTDP 0XFF\n" +
+										"LDPP #013\n" +
+										"OTDP 0XFF\n" +
+										"MCRE NAME\n" +
+										"DEFJ STRT\n" +
+										"MCRO NAME\n" +
+										"LDPP 0X00\n" +
+										"IFEQ 0x00\n" +
+										"JUMP STRT\n";
+	StringBuilder outFile = new StringBuilder();
 	
 	void Run(){
 	}
@@ -258,7 +279,47 @@ public class App{
 		return (byte)0;
 	}
 	
-	void testInterpretPointer(){
-		
+	void testIsCPUInstruction(){
+		assert isCPUInstruction((byte)0x01) == true;
+		assert isCPUInstruction((byte)0x0D) == true;
+		assert isCPUInstruction((byte)0xF1) == false;
+		assert isCPUInstruction((byte)0xF4) == false;
+	}
+	
+	boolean isCPUInstruction(byte instruction){
+		return instruction >= cpuInstructionRange[0] && instruction <= cpuInstructionRange[1];
+	}
+
+	void testIsAsmInstruction(){
+		assert isAsmInstruction((byte)0x01) == false;
+		assert isAsmInstruction((byte)0x0D) == false;
+		assert isAsmInstruction((byte)0xF1) == true;
+		assert isAsmInstruction((byte)0xF4) == true;
+	}
+	
+	boolean isAsmInstruction(byte instruction){
+		return instruction >= asmInstructionRange[0] && instruction <= asmInstructionRange[1];
+	}
+	
+	void testWriteInstruction(){
+		assert writeInstruction(keywords.get("LDDP")) == 1;
+		assert writeInstruction(keywords.get("JUMP")) == 1;
+		assert writeInstruction(keywords.get("MCRB")) == 2;
+		assert writeInstruction(keywords.get("DEFJ")) == 2;
+		assert writeInstruction((byte)0x0F) == -1;
+		assert writeInstruction((byte)0xF5) == -1;
+	}
+	
+	int writeInstruction(byte instruction){
+		if(isCPUInstruction(instruction)){
+			outFile.append((char)instruction);
+			return 1;
+		}
+		else if(isAsmInstruction(instruction)){
+			//runAsmInstruction();
+			return 2;
+		}
+		else
+			return -1;
 	}
 }
