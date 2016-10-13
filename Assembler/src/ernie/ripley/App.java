@@ -9,6 +9,9 @@ Ernie Ripley
 Assembler for my 8bit processor that uses a map from string instruction to byte values.
 Assembler expects an instructions followed by a value.
 Values can represent locations or numbers depending on the instruction.
+Assembler can recognize macros by using the MCRB(macro begin), MCRE(macro end) and MCRO(use macro) instructions
+Assembler can set a variable to a jump location by using the DEFJ(define jump) instruction
+Assembler can set a variable to a value by using the DEFV(define variable) instruction
 
 Language Functions include
 	LDPP --- 0X01
@@ -45,19 +48,19 @@ Macros are defined by the following form [Macro begin or end] [4 letter macro na
 		OTPP 0XFF
 		MCRE OUTZ
 		
-Macros can be used in the following form [PUTM] [4 letter macro name]
+Macros can be used in the following form [MCRO] [4 letter macro name]
 	using a macro...
-		PUTM OUTZ
+		MCRO OUTZ
 		
 Program pointers can be saved for later use in the following way [DFPP] [4 letter pointer name]
 	for example
-		DFPP LOOP
+		DEFJ LOOP
 		
 Program pointers can be used in the following way [JUMP] [4 letter pointer name]
 	for example...
 		JUMP LOOP
 		
-Macros and Program Pointer variables are allowed to have the same name since access to them depends on the context
+Macros and Jump Pointer variables are allowed to have the same name since access to them depends on the context
 */
 
 public class App{
@@ -71,7 +74,7 @@ public class App{
 		initKeywords();
 	
 		assert (keywords.get("LDPP").byteValue() == (byte)0x01);
-		assert (keywords.get("DEFP").byteValue() == (byte)0xF3);
+		assert (keywords.get("DEFJ").byteValue() == (byte)0xF4);
 	}
 	
 	void initKeywords(){
@@ -90,7 +93,8 @@ public class App{
 		keywords.put("OTDP",(byte)0x0D);
 		keywords.put("MCRB",(byte)0xF1);
 		keywords.put("MCRE",(byte)0xF2);
-		keywords.put("DEFP",(byte)0xF3);
+		keywords.put("MCRO",(byte)0xF3);
+		keywords.put("DEFJ",(byte)0xF4);
 	}
 	
 	void testNextLine(){
@@ -225,7 +229,13 @@ public class App{
 		assert interpretInstruction("OTDP") == (byte)0x0D;
 		assert interpretInstruction("MCRB") == (byte)0xF1;
 		assert interpretInstruction("MCRE") == (byte)0xF2;
-		assert interpretInstruction("DEFP") == (byte)0xF3;
+		assert interpretInstruction("MCRO") == (byte)0xF3;
+		assert interpretInstruction("DEFJ") == (byte)0xF4;
+
+
+		assert interpretInstruction("LDPP") != (byte)0xF4;
+		assert interpretInstruction("JUMP") != (byte)0x01;
+		assert interpretInstruction("DEFJ") != (byte)0x01;
 	}
 	
 	byte interpretInstruction(String instruction){
