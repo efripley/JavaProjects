@@ -231,4 +231,24 @@ public class App{
 	byte interpretInstruction(String instruction){
 		return (byte)keywords.get(instruction);
 	}
+	
+	void testInterpretValue(){
+		assert interpretValue("0X0F") == (byte)0x0F;
+		assert interpretValue("#015") == (byte)0x0F;
+		assert interpretValue("CH-Z") == (byte)0x5A;
+	}
+	
+	byte interpretValue(String value){
+		if(value.charAt(0) == '0' && value.charAt(1) == 'X')
+			return (byte)((Character.digit(value.charAt(2), 16) << 4) + Character.digit(value.charAt(3), 16));
+		else if(value.charAt(0) == '#')
+			return (byte)Integer.parseInt(value.substring(1));
+		else if(value.charAt(0) == 'C' && value.charAt(1) == 'H' && value.charAt(2) == '-')
+			return (byte)value.charAt(3);
+		return (byte)0;
+	}
+	
+	void testInterpretPointer(){
+		
+	}
 }
