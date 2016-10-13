@@ -29,7 +29,7 @@ Language supports hex, numbers and charachters
 	for example
 	LDPP 0X5A loads value 01011010
 	LDPP CH-Z loads value 01011010
-	LDPP #127 loads value 01111111 
+	LDPP #127 loads value 01111111
 
 Language must be written in the from [INSTRUCTION] [VALUE]
 	for example...
@@ -61,29 +61,36 @@ Macros and Program Pointer variables are allowed to have the same name since acc
 */
 
 public class App{
-	TreeMap keywords = new TreeMap();
+	TreeMap<String, Byte> keywords = new TreeMap<String, Byte>();
 	int charIndex = 0;
+	
 	void Run(){
-		this.initKeywords();
+	}
+	
+	void testInitKeywords(){
+		initKeywords();
+	
+		assert (keywords.get("LDPP").byteValue() == (byte)0x01);
+		assert (keywords.get("DEFP").byteValue() == (byte)0xF3);
 	}
 	
 	void initKeywords(){
-		keywords.put("LDPP", 0x01);
-		keywords.put("LDDP", 0x02);
-		keywords.put("STOR", 0x03);
-		keywords.put("ADPP", 0x04);
-		keywords.put("ADDP", 0x05);
-		keywords.put("IFLT", 0x06);
-		keywords.put("IFEQ", 0x07);
-		keywords.put("IFGT", 0x08);
-		keywords.put("JUMP", 0X09);
-		keywords.put("OTPP", 0x0A);
-		keywords.put("OTDP", 0x0B);
-		keywords.put("INPP", 0x0C);
-		keywords.put("INDP", 0x0D);
-		keywords.put("MCRB", 0xF1);
-		keywords.put("MCRE", 0xF2);
-		keywords.put("DEFP", 0xF3);
+		keywords.put("LDPP",(byte)0x01);
+		keywords.put("LDDP",(byte)0x02);
+		keywords.put("STOR",(byte)0x03);
+		keywords.put("ADPP",(byte)0x04);
+		keywords.put("ADDP",(byte)0x05);
+		keywords.put("IFLT",(byte)0x06);
+		keywords.put("IFEQ",(byte)0x07);
+		keywords.put("IFGT",(byte)0x08);
+		keywords.put("JUMP",(byte)0X09);
+		keywords.put("INPP",(byte)0x0A);
+		keywords.put("INDP",(byte)0x0B);
+		keywords.put("OTPP",(byte)0x0C);
+		keywords.put("OTDP",(byte)0x0D);
+		keywords.put("MCRB",(byte)0xF1);
+		keywords.put("MCRE",(byte)0xF2);
+		keywords.put("DEFP",(byte)0xF3);
 	}
 	
 	void testNextLine(){
@@ -200,5 +207,28 @@ public class App{
 		}
 		
 		return value.toString();
+	}
+	
+	void testInterpretInstruction(){
+		assert interpretInstruction("LDPP") == (byte)0x01;
+		assert interpretInstruction("LDDP") == (byte)0x02;
+		assert interpretInstruction("STOR") == (byte)0x03;
+		assert interpretInstruction("ADPP") == (byte)0x04;
+		assert interpretInstruction("ADDP") == (byte)0x05;
+		assert interpretInstruction("IFLT") == (byte)0x06;
+		assert interpretInstruction("IFEQ") == (byte)0x07;
+		assert interpretInstruction("IFGT") == (byte)0x08;
+		assert interpretInstruction("JUMP") == (byte)0x09;
+		assert interpretInstruction("INPP") == (byte)0x0A;
+		assert interpretInstruction("INDP") == (byte)0x0B;
+		assert interpretInstruction("OTPP") == (byte)0x0C;
+		assert interpretInstruction("OTDP") == (byte)0x0D;
+		assert interpretInstruction("MCRB") == (byte)0xF1;
+		assert interpretInstruction("MCRE") == (byte)0xF2;
+		assert interpretInstruction("DEFP") == (byte)0xF3;
+	}
+	
+	byte interpretInstruction(String instruction){
+		return (byte)keywords.get(instruction);
 	}
 }
