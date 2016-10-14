@@ -64,9 +64,13 @@ Macros and Jump Pointer variables are allowed to have the same name since access
 
 public class App{
 	TreeMap<String, Byte> keywords = new TreeMap<String, Byte>();
+	TreeMap<String, String> macros = new TreeMap<String, String>();
+	TreeMap<String, Byte> jumpVars = new TreeMap<String, Byte>();
+	TreeMap<String, Byte> valueVars = new TreeMap<String, Byte>();
 	int[] cpuInstructionRange = {(byte)0x01, (byte)0x0D};
-	int[] asmInstructionRange = {(byte)0xF1, (byte)0xF4};
+	int[] asmInstructionRange = {(byte)0xF1, (byte)0xF5};
 	int charIndex = 0;
+	
 	String testCode = "MCRB NAME\n" +
 										"LDPP CH-E\n" +
 										"OTDP 0XFF\n" +
@@ -116,6 +120,7 @@ public class App{
 		keywords.put("MCRE",(byte)0xF2);
 		keywords.put("MCRO",(byte)0xF3);
 		keywords.put("DEFJ",(byte)0xF4);
+		keywords.put("DEFV",(byte)0xF5);
 	}
 	
 	void testNextLine(){
@@ -301,25 +306,30 @@ public class App{
 		return instruction >= asmInstructionRange[0] && instruction <= asmInstructionRange[1];
 	}
 	
-	void testWriteInstruction(){
-		assert writeInstruction(keywords.get("LDDP")) == 1;
-		assert writeInstruction(keywords.get("JUMP")) == 1;
-		assert writeInstruction(keywords.get("MCRB")) == 2;
-		assert writeInstruction(keywords.get("DEFJ")) == 2;
-		assert writeInstruction((byte)0x0F) == -1;
-		assert writeInstruction((byte)0xF5) == -1;
+	void writeByteInstruction(byte instruction){
+		outFile.append((char)instruction);
 	}
 	
-	int writeInstruction(byte instruction){
+	void testEvaluateInstruction(){
+		evaluateInstruction(keywords.get("LDDP"));
+		assert outFile.charAt(outFile.length() - 1) == (char)keywords.get("LDDP").byteValue();
+
+		evaluateInstruction(keywords.get("JUMP"));
+		assert outFile.charAt(outFile.length() - 1) == (char)keywords.get("JUMP").byteValue();
+
+		outFile = new StringBuilder();
+	}
+	
+	void evaluateInstruction(byte instruction){
 		if(isCPUInstruction(instruction)){
-			outFile.append((char)instruction);
-			return 1;
+			writeByteInstruction(instruction);
 		}
 		else if(isAsmInstruction(instruction)){
-			//runAsmInstruction();
-			return 2;
+			//outFile.append(runAsmInstruction(instruction));
 		}
-		else
-			return -1;
+	}
+	
+	void testRunAsmInstruction(){
+		
 	}
 }
