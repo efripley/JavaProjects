@@ -69,8 +69,11 @@ public class App{
 	TreeMap<String, Byte> valueVars = new TreeMap<String, Byte>();
 	int[] cpuInstructionRange = {(byte)0x01, (byte)0x0D};
 	int[] asmInstructionRange = {(byte)0xF1, (byte)0xF5};
-	int charIndex = 0;
 	
+	int index = 0;
+	int memoryLocation = 0;
+	
+	Sring inFile;
 	StringBuilder outFile = new StringBuilder();
 	
 	void Run(){
@@ -127,145 +130,82 @@ public class App{
 	}
 	
 	void testNextToken(){
+		assert this.nextToken().equals("MCRB");
+		assert this.nextToken().equals("NAME");
 		assert this.nextToken().equals("LDPP");
-		assert this.nextLine(code).equals("ADPP 0X01");
-		assert this.nextLine(code).equals("ADPP 0X01");
-		assert this.nextLine(code).equals("STOR 0XFF");
-		
-		charIndex = 0;
+		assert this.nextToken().equals("CH-E");
 	}
 	
-	String nextLine(String code){
-		StringBuilder line = new StringBuilder();
-		boolean done = false;
-		char codeChar = (char)0;
-		
-		while(!done){
-			codeChar = code.charAt(charIndex);
-			if(codeChar == '\n')
-				done = true;
-			else
-				line.append(codeChar);
-			++charIndex;
-		}
-		
-		return line.toString();
-	}
-	
-	void testGetInstruction(){
-		String code = "LDPP 0X01\n" +
-									"ADPP 0X01\n" +
-									"ADPP 0X01\n" +
-									"STOR 0XFF\n";
-		
-		String line = nextLine(code);
-		assert getInstruction(line).equals("LDPP");
-		
-		line = nextLine(code);
-		assert getInstruction(line).equals("ADPP");
-		
-		line = nextLine(code);
-		assert getInstruction(line).equals("ADPP");
-		
-		line = nextLine(code);
-		assert getInstruction(line).equals("STOR");
-		
-		charIndex = 0;
-	}
-	
-	String getInstruction(String line){
-		StringBuilder instruction = new StringBuilder();
+	String nextToken(){
+		StringBuilder token = new StringBuilder();
 		boolean done = false;
 		int index = 0;
-		char codeChar = (char)0;
+		char tokenChar = (char)0;
 		
 		while(!done){
-			codeChar = line.charAt(index);
+			tokenChar = inFile.charAt(index);
 			
-			if(codeChar == ' ')
+			if(tokenChar == ' ')
+				while(tokenChar == ' ' || tokenChar == '\t' || tokenChar == '\n')
+					index++;
+					tokenChar = inFile.charAt(index);
+				}
 				done = true;
 			else
-				instruction.append(codeChar);
+				token.append(tokenChar);
 			
-			++index;
+			index++;
 		}
 		
-		return instruction.toString();
+		memoryLocation++;
+		
+		return token.toString();
 	}
 	
-	void testGetValue(){
-		String code = "LDPP 0X01\n" +
-									"ADPP 0X01\n" +
-									"ADPP 0X01\n" +
-									"STOR 0XFF\n";
-		
-		String line = nextLine(code);
-		assert getValue(line).equals("0X01");
+	void testEvaluateToken(){
+		assert evaluateToken("LDPP") == (byte)0x01;
+		assert evaluateToken("LDDP") == (byte)0x02;
+		assert evaluateToken("STOR") == (byte)0x03;
+		assert evaluateToken("ADPP") == (byte)0x04;
+		assert evaluateToken("ADDP") == (byte)0x05;
+		assert evaluateToken("IFLT") == (byte)0x06;
+		assert evaluateToken("IFEQ") == (byte)0x07;
+		assert evaluateToken("IFGT") == (byte)0x08;
+		assert evaluateToken("JUMP") == (byte)0x09;
+		assert evaluateToken("INPP") == (byte)0x0A;
+		assert evaluateToken("INDP") == (byte)0x0B;
+		assert evaluateToken("OTPP") == (byte)0x0C;
+		assert evaluateToken("OTDP") == (byte)0x0D;
+		assert evaluateToken("MCRB") == (byte)0xF1;
+		assert evaluateToken("MCRE") == (byte)0xF2;
+		assert evaluateToken("MCRO") == (byte)0xF3;
+		assert evaluateToken("DEFJ") == (byte)0xF4;
 
-		line = nextLine(code);
-		assert getValue(line).equals("0X01");
-
-		line = nextLine(code);
-		assert getValue(line).equals("0X01");
-
-		line = nextLine(code);
-		assert getValue(line).equals("0XFF");
+		assert evaluateToken("LDPP") != (byte)0xF4;
+		assert evaluateToken("JUMP") != (byte)0x01;
+		assert evaluateToken("DEFJ") != (byte)0x01;
 	}
 	
-	String getValue(String line){
-		StringBuilder value = new StringBuilder();
-		boolean done = false;
-		boolean instruction = true;;
-		int index = 0;
-		char codeChar = (char)0;
-		
-		while(!done){
-			codeChar = line.charAt(index);
+	void evaluateToken(String token){
+		if(token == "JUMP"){
+		if(keywords.get(token) <= (byte)0x0F){
 			
-			if(codeChar == ' '){
-				if(instruction)
-					instruction = false;
-			}
-			else if(instruction == false)
-				value.append(codeChar);
-			
-			++index;
-			if(index >= line.length())
-				done = true;
 		}
-		
-		return value.toString();
+		//if is a macro begin
+		//if is using a macro
+		//if is defining a jump
+		//if is defining a var
+		//else its an instruction
 	}
-	
+
 	void testInterpretInstruction(){
-		assert interpretInstruction("LDPP") == (byte)0x01;
-		assert interpretInstruction("LDDP") == (byte)0x02;
-		assert interpretInstruction("STOR") == (byte)0x03;
-		assert interpretInstruction("ADPP") == (byte)0x04;
-		assert interpretInstruction("ADDP") == (byte)0x05;
-		assert interpretInstruction("IFLT") == (byte)0x06;
-		assert interpretInstruction("IFEQ") == (byte)0x07;
-		assert interpretInstruction("IFGT") == (byte)0x08;
-		assert interpretInstruction("JUMP") == (byte)0x09;
-		assert interpretInstruction("INPP") == (byte)0x0A;
-		assert interpretInstruction("INDP") == (byte)0x0B;
-		assert interpretInstruction("OTPP") == (byte)0x0C;
-		assert interpretInstruction("OTDP") == (byte)0x0D;
-		assert interpretInstruction("MCRB") == (byte)0xF1;
-		assert interpretInstruction("MCRE") == (byte)0xF2;
-		assert interpretInstruction("MCRO") == (byte)0xF3;
-		assert interpretInstruction("DEFJ") == (byte)0xF4;
-
-
-		assert interpretInstruction("LDPP") != (byte)0xF4;
-		assert interpretInstruction("JUMP") != (byte)0x01;
-		assert interpretInstruction("DEFJ") != (byte)0x01;
+		
 	}
-	
+  
 	byte interpretInstruction(String instruction){
 		return (byte)keywords.get(instruction);
 	}
-	
+  
 	void testInterpretValue(){
 		assert interpretValue("0X0F") == (byte)0x0F;
 		assert interpretValue("#015") == (byte)0x0F;
