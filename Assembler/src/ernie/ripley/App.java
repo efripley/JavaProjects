@@ -71,28 +71,31 @@ public class App{
 	int[] asmInstructionRange = {(byte)0xF1, (byte)0xF5};
 	int charIndex = 0;
 	
-	String testCode = "MCRB NAME\n" +
-										"LDPP CH-E\n" +
-										"OTDP 0XFF\n" +
-										"LDPP CH-R\n" +
-										"OTDP 0XFF\n" +
-										"LDPP CH-N\n" +
-										"OTDP 0XFF\n" +
-										"LDPP CH-I\n" +
-										"OTDP 0XFF\n" +
-										"LDPP CH-E\n" +
-										"OTDP 0XFF\n" +
-										"LDPP #013\n" +
-										"OTDP 0XFF\n" +
-										"MCRE NAME\n" +
-										"DEFJ STRT\n" +
-										"MCRO NAME\n" +
-										"LDPP 0X00\n" +
-										"IFEQ 0x00\n" +
-										"JUMP STRT\n";
 	StringBuilder outFile = new StringBuilder();
 	
 	void Run(){
+	}
+	
+	void testInitTestVars(){
+		inFile = "MCRB NAME\n" +
+						 "LDPP CH-E\n" +
+						 "OTDP 0XFF\n" +
+						 "LDPP CH-R\n" +
+						 "OTDP 0XFF\n" +
+						 "LDPP CH-N\n" +
+						 "OTDP 0XFF\n" +
+						 "LDPP CH-I\n" +
+						 "OTDP 0XFF\n" +
+						 "LDPP CH-E\n" +
+						 "OTDP 0XFF\n" +
+						 "LDPP #013\n" +
+						 "OTDP 0XFF\n" +
+						 "MCRE NAME\n" +
+						 "DEFJ STRT\n" +
+						 "MCRO NAME\n" +
+						 "LDPP 0X00\n" +
+						 "IFEQ 0x00\n" +
+						 "JUMP STRT\n";
 	}
 	
 	void testInitKeywords(){
@@ -123,13 +126,8 @@ public class App{
 		keywords.put("DEFV",(byte)0xF5);
 	}
 	
-	void testNextLine(){
-		String code = "LDPP 0X01\n" +
-									"ADPP 0X01\n" +
-									"ADPP 0X01\n" +
-									"STOR 0XFF\n";
-		
-		assert this.nextLine(code).equals("LDPP 0X01");
+	void testNextToken(){
+		assert this.nextToken().equals("LDPP");
 		assert this.nextLine(code).equals("ADPP 0X01");
 		assert this.nextLine(code).equals("ADPP 0X01");
 		assert this.nextLine(code).equals("STOR 0XFF");
@@ -325,11 +323,13 @@ public class App{
 			writeByteInstruction(instruction);
 		}
 		else if(isAsmInstruction(instruction)){
-			//outFile.append(runAsmInstruction(instruction));
+			evaluateASMInstruction(instruction);
 		}
 	}
 	
-	void testRunAsmInstruction(){
-		
+	void testEvaluateAsmInstruction(byte instruction){
+		if(instruction == keywords.get("DEFJ")){
+			jumpVars.push(nextToken(), (byte)lineNumber);
+		}
 	}
 }
