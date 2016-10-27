@@ -71,9 +71,14 @@ public class App{
 	int[] asmInstructionRange = {(byte)0xF1, (byte)0xF5};
 	
 	int index = 0;
-	int memoryLocation = 0;
+	byte memoryLocation = (byte)0x00;
+
+	int READ = 0;
+	int DEFJ = 1;
+	int JUMP = 2;
+	int mode = READ;
 	
-	Sring inFile;
+	String inFile;
 	StringBuilder outFile = new StringBuilder();
 	
 	void Run(){
@@ -126,7 +131,6 @@ public class App{
 		keywords.put("MCRE",(byte)0xF2);
 		keywords.put("MCRO",(byte)0xF3);
 		keywords.put("DEFJ",(byte)0xF4);
-		keywords.put("DEFV",(byte)0xF5);
 	}
 	
 	void testNextToken(){
@@ -145,12 +149,13 @@ public class App{
 		while(!done){
 			tokenChar = inFile.charAt(index);
 			
-			if(tokenChar == ' ')
-				while(tokenChar == ' ' || tokenChar == '\t' || tokenChar == '\n')
+			if(tokenChar == ' '){
+				while(tokenChar == ' ' || tokenChar == '\t' || tokenChar == '\n'){
 					index++;
 					tokenChar = inFile.charAt(index);
 				}
 				done = true;
+			}
 			else
 				token.append(tokenChar);
 			
@@ -162,114 +167,66 @@ public class App{
 		return token.toString();
 	}
 	
-	void testEvaluateToken(){
-		assert evaluateToken("LDPP") == (byte)0x01;
-		assert evaluateToken("LDDP") == (byte)0x02;
-		assert evaluateToken("STOR") == (byte)0x03;
-		assert evaluateToken("ADPP") == (byte)0x04;
-		assert evaluateToken("ADDP") == (byte)0x05;
-		assert evaluateToken("IFLT") == (byte)0x06;
-		assert evaluateToken("IFEQ") == (byte)0x07;
-		assert evaluateToken("IFGT") == (byte)0x08;
-		assert evaluateToken("JUMP") == (byte)0x09;
-		assert evaluateToken("INPP") == (byte)0x0A;
-		assert evaluateToken("INDP") == (byte)0x0B;
-		assert evaluateToken("OTPP") == (byte)0x0C;
-		assert evaluateToken("OTDP") == (byte)0x0D;
-		assert evaluateToken("MCRB") == (byte)0xF1;
-		assert evaluateToken("MCRE") == (byte)0xF2;
-		assert evaluateToken("MCRO") == (byte)0xF3;
-		assert evaluateToken("DEFJ") == (byte)0xF4;
-
-		assert evaluateToken("LDPP") != (byte)0xF4;
-		assert evaluateToken("JUMP") != (byte)0x01;
-		assert evaluateToken("DEFJ") != (byte)0x01;
-	}
-	
-	void evaluateToken(String token){
-		if(token == "JUMP"){
-		if(keywords.get(token) <= (byte)0x0F){
-			
-		}
-		//if is a macro begin
-		//if is using a macro
-		//if is defining a jump
-		//if is defining a var
-		//else its an instruction
-	}
-
-	void testInterpretInstruction(){
-		
-	}
-  
-	byte interpretInstruction(String instruction){
-		return (byte)keywords.get(instruction);
-	}
-  
-	void testInterpretValue(){
-		assert interpretValue("0X0F") == (byte)0x0F;
-		assert interpretValue("#015") == (byte)0x0F;
-		assert interpretValue("CH-Z") == (byte)0x5A;
-	}
-	
-	byte interpretValue(String value){
-		if(value.charAt(0) == '0' && value.charAt(1) == 'X')
-			return (byte)((Character.digit(value.charAt(2), 16) << 4) + Character.digit(value.charAt(3), 16));
-		else if(value.charAt(0) == '#')
-			return (byte)Integer.parseInt(value.substring(1));
-		else if(value.charAt(0) == 'C' && value.charAt(1) == 'H' && value.charAt(2) == '-')
-			return (byte)value.charAt(3);
-		return (byte)0;
-	}
-	
-	void testIsCPUInstruction(){
-		assert isCPUInstruction((byte)0x01) == true;
-		assert isCPUInstruction((byte)0x0D) == true;
-		assert isCPUInstruction((byte)0xF1) == false;
-		assert isCPUInstruction((byte)0xF4) == false;
-	}
-	
-	boolean isCPUInstruction(byte instruction){
-		return instruction >= cpuInstructionRange[0] && instruction <= cpuInstructionRange[1];
-	}
-
-	void testIsAsmInstruction(){
-		assert isAsmInstruction((byte)0x01) == false;
-		assert isAsmInstruction((byte)0x0D) == false;
-		assert isAsmInstruction((byte)0xF1) == true;
-		assert isAsmInstruction((byte)0xF4) == true;
-	}
-	
-	boolean isAsmInstruction(byte instruction){
-		return instruction >= asmInstructionRange[0] && instruction <= asmInstructionRange[1];
-	}
-	
-	void writeByteInstruction(byte instruction){
-		outFile.append((char)instruction);
-	}
-	
-	void testEvaluateInstruction(){
-		evaluateInstruction(keywords.get("LDDP"));
-		assert outFile.charAt(outFile.length() - 1) == (char)keywords.get("LDDP").byteValue();
-
-		evaluateInstruction(keywords.get("JUMP"));
-		assert outFile.charAt(outFile.length() - 1) == (char)keywords.get("JUMP").byteValue();
-
+	void testTotalEvaluateWriteFunctions(){
 		outFile = new StringBuilder();
+		
+		evaluateToken("0X05");
+		assert outFile.charAt(outFile.length() - 1) == (char)0x05;
+		
+		evaluateToken("CH-E");
+		assert outFile.charAt(outFile.length() - 1) == 'E';
+		
+		evaluateToken("CH-$");
+		assert outFile.charAt(outFile.length() - 1) == '$';
+		
+		evaluateToken("LDPP");
+		assert outFile.charAt(outFile.length() - 1) == (char)0x01;
+
+		evaluateToken("JUMP");
+		assert mode == JUMP;
+		mode = READ;
+		assert outFile.charAt(outFile.length() - 1) == (char)0x09;
 	}
-	
-	void evaluateInstruction(byte instruction){
-		if(isCPUInstruction(instruction)){
-			writeByteInstruction(instruction);
+
+	void evaluateToken(String token){
+		if(memoryLocation % 2 == 0){
+			if(token == "JUMP"){
+				writeByte(keywords.get(token));
+				mode = JUMP;
+			}
+			else if(token =="DEFJ"){
+				mode = DEFJ;
+			}
+			else if(token == "MCRB"){
+				//Not yet implemented
+			}
+			else if(token == "MCRO"){
+				//Not yet iplemented
+			}
 		}
-		else if(isAsmInstruction(instruction)){
-			evaluateASMInstruction(instruction);
+		else{
+			interpretAsValue(token);
 		}
 	}
-	
-	void testEvaluateAsmInstruction(byte instruction){
-		if(instruction == keywords.get("DEFJ")){
-			jumpVars.push(nextToken(), (byte)lineNumber);
+
+	void writeByte(byte outByte){
+		outFile.append((char)outByte);
+	}
+
+	void interpretAsValue(String value){
+		if(value.charAt(0) == '0' && value.charAt(1) == 'X')
+			writeByte((byte)((Character.digit(value.charAt(2), 16) << 4) + Character.digit(value.charAt(3), 16)));
+		else if(value.charAt(0) == '#')
+			writeByte((byte)Integer.parseInt(value.substring(1)));
+		else if(value.charAt(0) == 'C' && value.charAt(1) == 'H' && value.charAt(2) == '-')
+			writeByte((byte)value.charAt(3));
+		else if(mode == JUMP){
+			if(jumpVars.containsKey(value))
+				writeByte((byte)(jumpVars.get(value).byteValue() - memoryLocation));
+		}
+		else if(mode == DEFJ){
+			memoryLocation -= 2;
+			jumpVars.put(value, (byte)memoryLocation);
 		}
 	}
 }
