@@ -1,6 +1,5 @@
 package ernie.ripley;
 
-import static kiss.API.*;
 import java.util.TreeMap;
 import java.lang.StringBuilder;
 
@@ -81,8 +80,12 @@ public class App{
 	String inFile;
 	StringBuilder outFile = new StringBuilder();
 	
-	void Run(){
-	}
+  public static void main(String [] args){
+    testInitTestVars();
+    testInitKeywords();
+    testNextToken();
+    testTotalEvaluateWriteFunctions();
+  }
 	
 	void testInitTestVars(){
 		inFile = "MCRB NAME\n" +
