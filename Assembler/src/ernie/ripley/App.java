@@ -81,10 +81,12 @@ public class App{
 	StringBuilder outFile = new StringBuilder();
 	
   public static void main(String [] args){
-    testInitTestVars();
-    testInitKeywords();
-    testNextToken();
-    testTotalEvaluateWriteFunctions();
+    App app = new App();
+
+    app.testInitTestVars();
+    app.testInitKeywords();
+    app.testNextToken();
+    app.testTotalEvaluateWriteFunctions();
   }
 	
 	void testInitTestVars(){
