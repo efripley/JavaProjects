@@ -16,7 +16,7 @@ public class SkiingActivity{
     else if(currentStatus.equals("Skiing"))
       return "Idle";
     else if(currentStatus.equals("Idle"))
-      return "Waiting for lift";
+      return "Waiting For Lift";
     else
       return "Huh?";
   }

@@ -23,11 +23,13 @@ public class Lift{
 
   public void board(){
     boarding = false;
-    pause(1);
+    pause(.1);
     boarding = true;
   }
 
   public String getTrail(int trailNumber){
+    if(trailNumber < 0)
+      return "Not Yet";
     return trails.get(trailNumber);
   }
 }
