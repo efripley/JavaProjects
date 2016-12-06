@@ -1,0 +1,25 @@
+Todo
+
+-Update tilex to allow for layers and tiles to be offset
+-Create a more understandable user interface
+-Create an easier and more understandable experience when managing chests
+-Add a more understandable interface for crafting. Need to know what items are required for recipies
+-Disconnect player from a fixed grid position and allow for player to move freely in world to any point in the world
+-Transition game to action based
+-Add an action box to more easily understande what the player is acting on.
+-Move placeing blocks to the interact button
+-Rename action and interact buttons to A and B
+-Move these buttons side by side opposite of the left right buttons.
+-Replace the red X with a trash icon in the inventory screen.
+-Add zombies
+-Add experience
+-Add player automatic player health regeneration
+-Add survivors
+-Add a player rotation lock
+-Add signs
+-Add zombie path detection
+-Add sound for player moving, attacking, interacting, block breaking, zombies and survivors
+-Better trees
+-Break the world into chunks
+-Transition to a larger world of 5000x5000
+-
