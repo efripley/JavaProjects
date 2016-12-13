@@ -8,3 +8,5 @@
 ####Homework 5 | Assembler: Collections With Tests Not Using Kiss | [Found in Homework5 branch](https://github.com/efripley/JavaProjects/tree/Homework5/Master)
 
 ####Final Project | MicaRL Version 0.6 | [Found in FinalProject branch](https://github.com/efripley/JavaProjects/tree/FinalProject/MicaRLVersion0.6)
+#####-Tests can be found in TilexTest.java and MicaRLTest.java within their respective folders.
+#####-Tests are intiated in Start.java and Main.java within micarl folder
