@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.app.Activity;
 
 import com.rip.framework.Tilex;
+import com.rip.framework.TilexTest;
 
 public class Start extends Activity
 {
@@ -12,6 +13,11 @@ public class Start extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		Tilex.init(this, new Main(), 800, 480);
+
+		TilexTest test = new TilexTest();
+		test.fileWriter();
+		test.fileReader();
+		test.fileContents();
 	}
 
 	@Override

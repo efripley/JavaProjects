@@ -203,6 +203,10 @@ public class Main implements TXRoutine
 
             for(int a = Definitions.STICK; a < Definitions.LASTINGREDIENT; a++)
                 Definitions.loadItem(a, gameIngredients.getName(a), gameIngredients.getImageId(a));
+
+            MicaRLTest test = new MicaRLTest();
+            test.recipies();
+            test.tiles();
         }
         if(game)
         {
